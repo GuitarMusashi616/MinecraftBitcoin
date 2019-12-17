@@ -12,8 +12,12 @@ function fromHex(hex)
     end))
 end
 
-hex = "6abc6129df7129DE"
-data = fromHex(hex)
-print(data)
-hex2 = toHex(data)
-print(hex2)
+function testHex()
+  local hex = "6abc6129df7129DE"
+  local data = fromHex(hex)
+  print(data)
+  local hex2 = toHex(data)
+  print(hex2)
+end
+
+testHex()
