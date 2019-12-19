@@ -2,6 +2,7 @@ local component = require("component")
 local DC = component.proxy(component.list("data")())
 local Transaction = require("Transaction")
 local BitcoinAddress = require("BitcoinAddress")
+local BitcoinMiner = require("BitcoinMiner")
 
 -- Converts binary data into hexadecimal string.
 function toHex(data)
@@ -90,6 +91,7 @@ alice = BitcoinAddress:new()
 bob = BitcoinAddress:new()
 aparna = BitcoinAddress:new()
 jing = BitcoinAddress:new()
+miningTurtle = BitcoinMiner:new()
 
 inputs = {[512]=250,[214]=250}
 outputs = {[125]=500}
@@ -100,15 +102,7 @@ local tx = bob:createTransaction(inputs,outputs)
 --print(tx)
 bob:sign(tx)
 print(tx)
+--miner:verify(tx)
+print(bob)
 
 --alice:sign(tx)
-
-
-
-
---print(table.toString(tx))
---bob:sign(tx)
-
-
---printTab(tx.signatures)
---print(alice:verify(tx,bob.publicKey,tx.signatures[1]))

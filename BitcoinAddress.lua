@@ -26,8 +26,17 @@ function BitcoinAddress:verify(data,publicKey,signature)
   return DC.ecdsa(data,publicKey,signature)
 end
 
+function BitcoinAddress:incrementNonce()
+  self.nonce = self.nonce + 1
+end
+
+function BitcoinAddress:getPublicKey()
+  return self.publicKey
+end
+
 function BitcoinAddress:__tostring()
-  return table.toString(self,1)
+  --return table.toString(self,1)
+  return self.publicKey.serialize()
 end
 
 return BitcoinAddress
