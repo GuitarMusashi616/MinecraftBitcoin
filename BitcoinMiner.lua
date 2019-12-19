@@ -36,7 +36,7 @@ function BitcoinMiner:verify(tx)
     io.write(i)
     io.write(" ")
     print(v)
-    print(self.state[self.ithState][i].owner)
+    print(self.state[self.ithState][i].publicKey.serialize())
     
     --local strAddress = ""
     --local publicKey = {isPublic = function() return true end,serialize = function() return strAddress end}  
@@ -50,7 +50,7 @@ end
 
 function BitcoinMiner:initialState(owner)
   local txOutputs = {}
-  table.insert(txOutputs,TransactionOutput:new(owner,500))
+  table.insert(txOutputs,TransactionOutput:new(owner:getPublicKey(),500))
   table.insert(self.state,txOutputs)
 end
 
@@ -64,7 +64,22 @@ function BitcoinMiner:updateState()
   for _,block in ipairs(self.blockChain) do
     for _,tx in ipairs(block.transactions) do
       self.state[self.ithState] = {}
-      table.insert(self.state[self.ithState],tx)
+      --get inputIter from tx
+      --self.state[self.ithState][inputIter].publicKey
+      --self.state[self.ithState][inputIter].amount
+      
+      --get outputIter from tx
+      
+      
+      for i,v in pairs(tx:getInput()) do
+        --get owner from tx
+        --get amount from tx
+        
+      end
+      
+      
+      
+      table.insert(self.state[self.ithState],TransactionOutput:new(tx,500))
     end
   end
 end

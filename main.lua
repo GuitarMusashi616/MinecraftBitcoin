@@ -85,27 +85,25 @@ function table:toSortedString(recursive)
   return str
 end
 
-alice = BitcoinWallet:new()
-bob = BitcoinWallet:new()
-aparna = BitcoinWallet:new()
-jing = BitcoinWallet:new()
-miningTurtle = BitcoinMiner:new()
+function testTransactionCreateSign()
+  local alice = BitcoinWallet:new()
+  local bob = BitcoinWallet:new()
+  local aparna = BitcoinWallet:new()
+  local jing = BitcoinWallet:new()
+  local miningTurtle = BitcoinMiner:new()
 
-inputs = {[1]=1}
-outputs = {[125]=500}
-tab = {[1]=5,[2]=3,[4]=inputs,[12]="stuff",["Apple"]=12,[132]="morestruff",["Banana"]=5,["angry"]=17,["zebra"]=18}
-local tx = bob:createTransaction(inputs,outputs)
+  local inputs = {[1]=1}
+  local outputs = {[125]=500}
+  local tab = {[1]=5,[2]=3,[4]=inputs,[12]="stuff",["Apple"]=12,[132]="morestruff",["Banana"]=5,["angry"]=17,["zebra"]=18}
+  local tx = bob:createTransaction(inputs,outputs)
+  bob:sign(tx)
+end
 
---print(table.toSortedString(bob,1))
---print(tx)
-bob:sign(tx)
-miningTurtle:initialBlock(tx)
---print(tx)
-miningTurtle:updateState()
-table.toString(miningTurtle:getState(),1)
---miningTurtle:initialState(bob)
---miningTurtle:verify(tx)
+function testState()
+  local bob = BitcoinWallet:new()
+  local miningTurtle = BitcoinMiner:new()
+  miningTurtle:initialState(bob)
+  print(miningTurtle.state[1][1])
+end
 
-
-
---alice:sign(tx)
+testState()
