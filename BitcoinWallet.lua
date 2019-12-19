@@ -1,42 +1,47 @@
-local BitcoinAddress = {}
+local BitcoinWallet = {}
 local component = require("component")
 local DC = component.proxy(component.list("data")())
 local Transaction = require("Transaction")
 
-function BitcoinAddress:new()
-  o = {}
+function BitcoinWallet:new()
+  local o = {}
   o.publicKey,o.privateKey = DC.generateKeyPair()
-  o.nonce = 0
+  o.address = DC.sha256(o.publicKey.serialize())
+  o.nonce = 1
   setmetatable(o,self)
   self.__index = self
   return o
 end
 
-function BitcoinAddress:createTransaction(inputs,outputs)
+function BitcoinWallet:createTransaction(inputs,outputs)
   local tx = Transaction:new(inputs,outputs)
   return tx
 end
 
-function BitcoinAddress:sign(tx)
+function BitcoinWallet:sign(tx)
   local sig = DC.ecdsa(tostring(tx),self.privateKey) or error("signature not valid")
   tx:addSignature(sig)
 end
 
-function BitcoinAddress:verify(data,publicKey,signature)
+function BitcoinWallet:verify(data,publicKey,signature)
   return DC.ecdsa(data,publicKey,signature)
 end
 
-function BitcoinAddress:incrementNonce()
+function BitcoinWallet:incrementNonce()
   self.nonce = self.nonce + 1
 end
 
-function BitcoinAddress:getPublicKey()
+function BitcoinWallet:getPublicKey()
   return self.publicKey
 end
 
-function BitcoinAddress:__tostring()
-  --return table.toString(self,1)
-  return self.publicKey.serialize()
+function BitcoinWallet:getAddress()
+  return self.address
 end
 
-return BitcoinAddress
+function BitcoinWallet:__tostring()
+  --return table.toString(self,1)
+  return self:getAddress()
+end
+
+return BitcoinWallet

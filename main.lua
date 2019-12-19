@@ -1,7 +1,7 @@
 local component = require("component")
 local DC = component.proxy(component.list("data")())
 local Transaction = require("Transaction")
-local BitcoinAddress = require("BitcoinAddress")
+local BitcoinWallet = require("BitcoinWallet")
 local BitcoinMiner = require("BitcoinMiner")
 
 -- Converts binary data into hexadecimal string.
@@ -85,15 +85,13 @@ function table:toSortedString(recursive)
   return str
 end
 
-  
-
-alice = BitcoinAddress:new()
-bob = BitcoinAddress:new()
-aparna = BitcoinAddress:new()
-jing = BitcoinAddress:new()
+alice = BitcoinWallet:new()
+bob = BitcoinWallet:new()
+aparna = BitcoinWallet:new()
+jing = BitcoinWallet:new()
 miningTurtle = BitcoinMiner:new()
 
-inputs = {[512]=250,[214]=250}
+inputs = {[1]=1}
 outputs = {[125]=500}
 tab = {[1]=5,[2]=3,[4]=inputs,[12]="stuff",["Apple"]=12,[132]="morestruff",["Banana"]=5,["angry"]=17,["zebra"]=18}
 local tx = bob:createTransaction(inputs,outputs)
@@ -101,8 +99,13 @@ local tx = bob:createTransaction(inputs,outputs)
 --print(table.toSortedString(bob,1))
 --print(tx)
 bob:sign(tx)
-print(tx)
---miner:verify(tx)
-print(bob)
+miningTurtle:initialBlock(tx)
+--print(tx)
+miningTurtle:updateState()
+table.toString(miningTurtle:getState(),1)
+--miningTurtle:initialState(bob)
+--miningTurtle:verify(tx)
+
+
 
 --alice:sign(tx)

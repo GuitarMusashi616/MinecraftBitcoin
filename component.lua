@@ -28,6 +28,13 @@ function dataCard.ecdsa(data,key,sig)
   end
 end
 
+function dataCard.sha256(data)
+  io.write("dataCard.sha256(")
+  io.write(data)
+  print(")")
+  return "A871C47A7F48A12B38A994E48A9659FAB5D6376F3DBCE37559BCB617EFE8662D"
+end
+
 function component.proxy()
   return dataCard
 end
