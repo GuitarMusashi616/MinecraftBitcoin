@@ -26,4 +26,8 @@ function BitcoinAddress:verify(data,publicKey,signature)
   return DC.ecdsa(data,publicKey,signature)
 end
 
+function BitcoinAddress:__tostring()
+  return "Hey it worked"
+end
+
 return BitcoinAddress

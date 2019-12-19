@@ -33,8 +33,34 @@ function printTab(table)
   end
 end
 
+function table:toString(recursive)
+  local str = '{'
+  for k,v in pairs(self) do
+    local vStr = tostring(v)
+    if type(v) == "table" and recursive then
+      vStr = table.toString(v)
+    end
+    if not vStr then
+      print(vStr)
+      return
+    end
+    str = str..'['..tostring(k)..'] = '..vStr..', '
+  end
+  if #str > 3 then
+    str = str:sub(1,#str-2)
+  end
+  str = str..'}'
+  return str
+end
+
 alice = BitcoinAddress:new()
 bob = BitcoinAddress:new()
-local tx = bob:createTransaction({bob,500},{alice,250})
-printTab(tx.signatures)
-print(alice:verify(tx,bob.publicKey,tx.signatures[1]))
+inputs = {[512]=250,[214]=250}
+outputs = {}
+tab = {}
+
+print(table.toString(bob))
+
+--local tx = bob:createTransaction({bob,500},{alice,250})
+--printTab(tx.signatures)
+--print(alice:verify(tx,bob.publicKey,tx.signatures[1]))
