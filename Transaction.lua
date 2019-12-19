@@ -4,11 +4,7 @@ function Transaction:new(inputs,outputs)
   o = {}
   o.inputs = inputs
   o.outputs = outputs
-  if #o.inputs == 0 then
-    o.type = "mint"
-  else
-    o.type = "send"
-  end
+  --o.type = "mint" or "send"
   o.signatures = {}
   setmetatable(o,self)
   self.__index = self
@@ -17,6 +13,10 @@ end
 
 function Transaction:addSignature(sig)
   table.insert(self.signatures,sig)
+end
+
+function Transaction:__tostring()
+  return table.toSortedString(self,1)
 end
 
 return Transaction

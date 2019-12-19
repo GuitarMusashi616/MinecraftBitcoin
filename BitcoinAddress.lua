@@ -5,7 +5,7 @@ local Transaction = require("Transaction")
 
 function BitcoinAddress:new()
   o = {}
-  o.publicKey,o.privKey = DC.generateKeyPair()
+  o.publicKey,o.privateKey = DC.generateKeyPair()
   o.nonce = 0
   setmetatable(o,self)
   self.__index = self
@@ -17,8 +17,9 @@ function BitcoinAddress:createTransaction(inputs,outputs)
   return tx
 end
 
-function BitcoinAddress:sign(data)
-  return DC.ecdsa(data,self.privKey)
+function BitcoinAddress:sign(tx)
+  local sig = DC.ecdsa(tostring(tx),self.privateKey) or error("signature not valid")
+  tx:addSignature(sig)
 end
 
 function BitcoinAddress:verify(data,publicKey,signature)

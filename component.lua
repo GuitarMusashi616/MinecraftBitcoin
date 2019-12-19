@@ -10,8 +10,10 @@ end
 function dataCard.ecdsa(data,key,sig)
   io.write("dataCard.ecdsa(")
   io.write(data)
-  io.write(key)
-  io.write(sig)
+  io.write(", ")
+  io.write(tostring(key.serialize()))
+  io.write(", ")
+  io.write(tostring(sig))
   print(")")
   if not key or not data then
     error("key and data required")
@@ -24,7 +26,6 @@ function dataCard.ecdsa(data,key,sig)
   else
     return "02D20BBD7E394AD5999A4CEBABAC9619732C343A4CAC99470C03E23BA2BDC2BC"
   end
-  
 end
 
 function component.proxy()

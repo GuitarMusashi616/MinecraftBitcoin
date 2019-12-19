@@ -40,10 +40,6 @@ function table:toString(recursive)
     if type(v) == "table" and recursive then
       vStr = table.toString(v)
     end
-    if not vStr then
-      print(vStr)
-      return
-    end
     str = str..'['..tostring(k)..'] = '..vStr..', '
   end
   if #str > 3 then
@@ -71,7 +67,7 @@ function table:toSortedString(recursive)
   local getStr = function(tab,index,recursive)
     local vStr = tostring(tab[index])
     if type(tab[index]) == "table" and recursive then
-      vStr = table.toSortedString(tab[index])
+      vStr = table.toSortedString(tab[index],recursive)
     end
     return vStr
   end  
@@ -92,15 +88,24 @@ end
 
 alice = BitcoinAddress:new()
 bob = BitcoinAddress:new()
+aparna = BitcoinAddress:new()
+jing = BitcoinAddress:new()
+
 inputs = {[512]=250,[214]=250}
 outputs = {[125]=500}
 tab = {[1]=5,[2]=3,[4]=inputs,[12]="stuff",["Apple"]=12,[132]="morestruff",["Banana"]=5,["angry"]=17,["zebra"]=18}
+local tx = bob:createTransaction(inputs,outputs)
 
-print(table.toSortedString(tab,1))
+--print(table.toSortedString(bob,1))
+--print(tx)
+bob:sign(tx)
+print(tx)
+
+--alice:sign(tx)
 
 
 
---local tx = bob:createTransaction(inputs,outputs)
+
 --print(table.toString(tx))
 --bob:sign(tx)
 
