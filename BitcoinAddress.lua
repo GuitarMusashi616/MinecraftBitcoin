@@ -14,7 +14,6 @@ end
 
 function BitcoinAddress:createTransaction(inputs,outputs)
   local tx = Transaction:new(inputs,outputs)
-  tx:addSignature(self:sign(tx))
   return tx
 end
 
@@ -27,7 +26,7 @@ function BitcoinAddress:verify(data,publicKey,signature)
 end
 
 function BitcoinAddress:__tostring()
-  return "Hey it worked"
+  return table.toString(self,1)
 end
 
 return BitcoinAddress
