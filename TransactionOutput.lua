@@ -1,10 +1,11 @@
 local TransactionOutput = {}
 
-function TransactionOutput:new(publicKey,value,isSpent)
+function TransactionOutput:new(publicKey,value,nonce,isSpent)
   local o = {}
   o.publicKey = publicKey
   o.value = value
-  o.isSpent = isSpent or 0
+  o.isSpent = isSpent or false
+  o.nonce = nonce or 1
   setmetatable(o,self)
   self.__index = self
   return o
@@ -19,7 +20,15 @@ function TransactionOutput:setSpent(isSpent)
 end
 
 function TransactionOutput:__tostring()
-  return self.publicKey.serialize()
+  return self.publicKey.serialize()..", "..tostring(self.value)
+end
+
+function TransactionOutput:getPublicKey()
+  return self.publicKey
+end
+
+function TransactionOutput:getNonce()
+  return self.nonce
 end
 
 return TransactionOutput

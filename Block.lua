@@ -17,4 +17,12 @@ function Block:insertTransaction(tx)
   table.insert(self.transactions,tx)
 end
 
+function Block:__tostring()
+  local str = ""
+  for i,v in pairs(self.transactions) do
+    str = str..tostring(v).." "
+  end
+  return str
+end
+
 return Block

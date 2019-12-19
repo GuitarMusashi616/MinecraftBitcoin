@@ -3,6 +3,7 @@ local DC = component.proxy(component.list("data")())
 local Transaction = require("Transaction")
 local BitcoinWallet = require("BitcoinWallet")
 local BitcoinMiner = require("BitcoinMiner")
+local Block = require("Block")
 
 -- Converts binary data into hexadecimal string.
 function toHex(data)
@@ -85,6 +86,16 @@ function table:toSortedString(recursive)
   return str
 end
 
+function table:sumValue()
+  local sum = 0
+  for k,v in pairs(self) do
+    if type(v) == "number" then
+      sum = sum + v
+    end
+  end
+  return sum
+end
+
 function testTransactionCreateSign()
   local alice = BitcoinWallet:new()
   local bob = BitcoinWallet:new()
@@ -106,4 +117,52 @@ function testState()
   print(miningTurtle.state[1][1])
 end
 
-testState()
+function testBlock()
+  local alice = BitcoinWallet:new()
+  local bob = BitcoinWallet:new()
+  local miningTurtle = BitcoinMiner:new()
+  miningTurtle:initialState(bob)
+  print(miningTurtle.state[1][1])
+  
+  local inputs = {[1]=1}
+  local outputs = {[alice.address] = 500}
+  local tx = bob:createTransaction(inputs,outputs)
+  bob:sign(tx)
+  
+  local block = Block:new()
+  block:insertTransaction(tx)
+  
+  miningTurtle.blockChain[1] = block
+  print(miningTurtle.blockChain[1])
+  local ithState = 1
+  --miningTurtle.processTransaction(tx)
+  --if miningTurtle:verify(input[1])
+  --inputs[1] = 1 --check nonce
+  local nonce = miningTurtle.state[ithState][1]:getNonce()
+  print(nonce)
+  if nonce ~= miningTurtle.blockChain[1].transactions[1].inputs[1] then
+    return --mismatched nonce
+  end
+  local pubKey = miningTurtle.state[ithState][1]:getPublicKey()
+  print(pubKey.serialize())
+  local signature = miningTurtle.blockChain[1].transactions[1].signatures[1]
+  local data = tostring(miningTurtle.blockChain[1].transactions[1])
+  
+  print(miningTurtle:verifySignature(data,pubKey,signature))
+  --ok the sigs are valid, time to check money
+  local totalOutput = table.sumValue(miningTurtle.blockChain[1].transactions[1].outputs)
+  print(totalOutput)
+  local totalAvailable = miningTurtle.state[ithState][1].value
+  print(totalAvailable)
+  if totalAvailable > totalOutput then
+    --remainder goes to miner's fees
+  elseif totalAvailable < totalOutput then
+    return --insufficient funds
+  end
+  --last step is process the transaction
+  --miningTurtle.blockChain[1].transactions[1].outputs --hash,value
+  --TransactionOutput:new(hash,value)
+  
+end
+
+testBlock()

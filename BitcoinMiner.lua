@@ -16,8 +16,8 @@ function BitcoinMiner:new()
   return o
 end
 
-function BitcoinMiner:verifySignature(publicKey,signature)
-  DC.ecdsa(publicKey,signature)
+function BitcoinMiner:verifySignature(data,publicKey,signature)
+  return DC.ecdsa(data,publicKey,signature)
 end
 
 function BitcoinMiner:verify(tx)
