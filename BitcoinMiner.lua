@@ -32,6 +32,7 @@ function BitcoinMiner:verify(tx)
   --for each owner check their signature
   --check the nonce
   local verifiedAddresses = {}
+  local spendable = true
   local nonceMatches = true
   local hasValidSignatures = true
   local hasEnoughCoins = true
@@ -48,6 +49,11 @@ function BitcoinMiner:verify(tx)
   local sumIn = 0
   for txid,nonce in tx:getTXIDs() do
     local utxo = self.state[txid]
+    
+    if utxo.isSpent then
+      error("transaction output is already spent")
+      spendable = false
+    end
     
     if nonce ~= utxo:getNonce() then
       error("nonce does not match")
@@ -75,7 +81,7 @@ function BitcoinMiner:verify(tx)
     print(tostring(sumIn-sumOut).." BTC is going towards miners fees")
   end
   --make sure each input address has the specified amount of cash
-  if nonceMatches and hasValidSignatures and hasEnoughCoins then
+  if spendable and nonceMatches and hasValidSignatures and hasEnoughCoins then
     return true
   else
     return false
@@ -99,7 +105,11 @@ function BitcoinMiner:updateState()
       if self:verify(tx) then
         print("verified: ",tx)
         for txid,nonce in tx:getTXIDs() do
+          self.state[txid]:setSpent(true)
           --self.state[txid]
+        end
+        for address,value in tx:getOutputAddresses() do
+          table.insert(self.state,TransactionOutput:new(address,value))
         end
         --self.ithState = self.ithState + 1
         --self.state[1] = 1

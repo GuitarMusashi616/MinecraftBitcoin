@@ -11,12 +11,8 @@ function TransactionOutput:new(address,value,nonce,isSpent)
   return o
 end
 
-function TransactionOutput:isSpent()
-  return self.isSpent
-end
-
 function TransactionOutput:setSpent(isSpent)
-  o.isSpent = isSpent
+  self.isSpent = isSpent
 end
 
 function TransactionOutput:__tostring()

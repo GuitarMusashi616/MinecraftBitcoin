@@ -188,11 +188,11 @@ function testMerkleRoot()
   bob:sign(tx1)
   block:insertTransaction(tx1)
   
-  local tx2 = Transaction:new({{1,1}},{{aparna.address,150},{bob.address,250}})
+  local tx2 = Transaction:new({{3,1}},{{aparna.address,150},{bob.address,250}})
   bob:sign(tx2)
   block:insertTransaction(tx2)
   
-  local tx3 = Transaction:new({{1,1}},{{jing.address,250}})
+  local tx3 = Transaction:new({{5,1}},{{jing.address,250}})
   bob:sign(tx3)
   block:insertTransaction(tx3)
   
@@ -201,7 +201,7 @@ function testMerkleRoot()
   print("blockchain: ",miner.blockchain[1].transactions[1])
   print("state: ",miner.state[1])
   miner:updateState()
-  
+  print("here")
   
   
 end
