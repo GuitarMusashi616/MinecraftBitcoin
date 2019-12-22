@@ -7,7 +7,8 @@ local Block = require("Block")
 
 function BitcoinMiner:new()
   local o = {}
-  o.state = {}
+  o.state = {}                                                     
+  o.nonces = {}
   o.blockchain = {}
   o.ithState = 1
   setmetatable(o,self)
@@ -55,7 +56,12 @@ function BitcoinMiner:verify(tx)
       spendable = false
     end
     
-    if nonce ~= utxo:getNonce() then
+    --start address at nonce 1 if not in nonce table
+    if not miner.nonces[utxo:getAddress()] then
+      miner.nonces[utxo:getAddress()] = 1
+    end
+    
+    if nonce ~= miner.nonces[utxo:getAddress()] then
       error("nonce does not match")
       nonceMatches = false
       --could be wrong order (shouldn't though because transactions are numbered in blockchain)
@@ -105,7 +111,9 @@ function BitcoinMiner:updateState()
       if self:verify(tx) then
         print("verified: ",tx)
         for txid,nonce in tx:getTXIDs() do
-          self.state[txid]:setSpent(true)
+          local txo = self.state[txid]
+          txo:setSpent(true)
+          self.nonces[txo:getAddress()] = self.nonces[txo:getAddress()]+1
           --self.state[txid]
         end
         for address,value in tx:getOutputAddresses() do
