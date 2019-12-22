@@ -201,7 +201,9 @@ function testMerkleRoot()
   print("blockchain: ",miner.blockchain[1].transactions[1])
   print("state: ",miner.state[1])
   miner:updateState()
-  print("here")
+  print(table.toString(miner.balances))
+  --miner:listUnspent()
+  --local balances = miner:getBalances()
   
   
 end

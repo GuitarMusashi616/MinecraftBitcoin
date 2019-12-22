@@ -7,7 +7,8 @@ local Block = require("Block")
 
 function BitcoinMiner:new()
   local o = {}
-  o.state = {}                                                     
+  o.state = {}                  
+  o.balances = {}
   o.nonces = {}
   o.blockchain = {}
   o.ithState = 1
@@ -59,6 +60,10 @@ function BitcoinMiner:verify(tx)
     --start address at nonce 1 if not in nonce table
     if not miner.nonces[utxo:getAddress()] then
       miner.nonces[utxo:getAddress()] = 1
+    end
+    
+    if not miner.balances[utxo:getAddress()] then
+      miner.balances[utxo:getAddress()] = 0
     end
     
     if nonce ~= miner.nonces[utxo:getAddress()] then
@@ -114,10 +119,12 @@ function BitcoinMiner:updateState()
           local txo = self.state[txid]
           txo:setSpent(true)
           self.nonces[txo:getAddress()] = self.nonces[txo:getAddress()]+1
+          self.balances[txo:getAddress()] = self.balances[txo:getAddress()] - txo:getValue()
           --self.state[txid]
         end
         for address,value in tx:getOutputAddresses() do
           table.insert(self.state,TransactionOutput:new(address,value))
+          self.balances[address] = self.balances[address]+value
         end
         --self.ithState = self.ithState + 1
         --self.state[1] = 1
