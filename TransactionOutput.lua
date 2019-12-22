@@ -1,8 +1,8 @@
 local TransactionOutput = {}
 
-function TransactionOutput:new(publicKey,value,nonce,isSpent)
+function TransactionOutput:new(address,value,nonce,isSpent)
   local o = {}
-  o.publicKey = publicKey
+  o.address = address
   o.value = value
   o.isSpent = isSpent or false
   o.nonce = nonce or 1
@@ -20,15 +20,19 @@ function TransactionOutput:setSpent(isSpent)
 end
 
 function TransactionOutput:__tostring()
-  return self.publicKey.serialize()..", "..tostring(self.value)
+  return self.address..", "..tostring(self.value)..", "..tostring(self.nonce)..", "..tostring(self.isSpent)
 end
 
-function TransactionOutput:getPublicKey()
-  return self.publicKey
+function TransactionOutput:getAddress()
+  return self.address
 end
 
 function TransactionOutput:getNonce()
   return self.nonce
+end
+
+function TransactionOutput:getValue()
+  return self.value
 end
 
 return TransactionOutput

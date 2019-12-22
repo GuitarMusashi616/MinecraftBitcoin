@@ -105,9 +105,10 @@ function testTransactionCreateSign()
 
   local inputs = {[1]=1}
   local outputs = {[125]=500}
-  local tab = {[1]=5,[2]=3,[4]=inputs,[12]="stuff",["Apple"]=12,[132]="morestruff",["Banana"]=5,["angry"]=17,["zebra"]=18}
   local tx = bob:createTransaction(inputs,outputs)
   bob:sign(tx)
+  print(tx)
+  
 end
 
 function testState()
@@ -122,7 +123,7 @@ function testBlock()
   local bob = BitcoinWallet:new()
   local miningTurtle = BitcoinMiner:new()
   miningTurtle:initialState(bob)
-  print(miningTurtle.state[1][1])
+  print("init state",miningTurtle.state[1][1])
   
   local inputs = {[1]=1}
   local outputs = {[alice.address] = 500}
@@ -132,25 +133,28 @@ function testBlock()
   local block = Block:new()
   block:insertTransaction(tx)
   
-  miningTurtle.blockChain[1] = block
-  print(miningTurtle.blockChain[1])
+  miningTurtle.blockchain[1] = block
+  print("blockchain",miningTurtle.blockChain[1])
   local ithState = 1
   --miningTurtle.processTransaction(tx)
   --if miningTurtle:verify(input[1])
   --inputs[1] = 1 --check nonce
+  
+  --applying transaction to current state to get next state
   local nonce = miningTurtle.state[ithState][1]:getNonce()
   print(nonce)
-  if nonce ~= miningTurtle.blockChain[1].transactions[1].inputs[1] then
+  if nonce ~= miningTurtle.blockchain[1].transactions[1].inputs[1] then
     return --mismatched nonce
   end
-  local pubKey = miningTurtle.state[ithState][1]:getPublicKey()
-  print(pubKey.serialize())
-  local signature = miningTurtle.blockChain[1].transactions[1].signatures[1]
-  local data = tostring(miningTurtle.blockChain[1].transactions[1])
+  local address = miningTurtle.state[ithState][1]:getAddress()
+  print(address)
+  local signature = miningTurtle.blockchain[1].transactions[1].signatures[1]
+  local pubKey = miningTurtle.blockchain[1].transactions[1].publicKeys[1]
+  local data = tostring(miningTurtle.blockchain[1].transactions[1])
   
   print(miningTurtle:verifySignature(data,pubKey,signature))
   --ok the sigs are valid, time to check money
-  local totalOutput = table.sumValue(miningTurtle.blockChain[1].transactions[1].outputs)
+  local totalOutput = table.sumValue(miningTurtle.blockchain[1].transactions[1].outputs)
   print(totalOutput)
   local totalAvailable = miningTurtle.state[ithState][1].value
   print(totalAvailable)
@@ -165,4 +169,44 @@ function testBlock()
   
 end
 
-testBlock()
+
+function testMerkleRoot()
+  --make 11 txs in 3rd block of chain
+  --put them in one block
+  --merklfy the block (hash up)
+  miner = BitcoinMiner:new()
+  bob = BitcoinWallet:new()
+  alice = BitcoinWallet:new()
+  aparna = BitcoinWallet:new()
+  jing = BitcoinWallet:new()
+  miner:initialState(bob)
+  print("miner: ",table.toString(miner))
+  print("state: ",miner.state[1])
+  local block = Block:new()
+  --[txid]=nonce, [address]=amount2send
+  local tx1 = Transaction:new( {{1,1}} , {{alice.address,100},{bob.address,400} })
+  bob:sign(tx1)
+  block:insertTransaction(tx1)
+  
+  local tx2 = Transaction:new({{1,1}},{{aparna.address,150},{bob.address,250}})
+  bob:sign(tx2)
+  block:insertTransaction(tx2)
+  
+  local tx3 = Transaction:new({{1,1}},{{jing.address,250}})
+  bob:sign(tx3)
+  block:insertTransaction(tx3)
+  
+  print("block: ",block.transactions[1])
+  miner:addBlock(block)
+  print("blockchain: ",miner.blockchain[1].transactions[1])
+  print("state: ",miner.state[1])
+  miner:updateState()
+  
+  
+  
+end
+
+--verify all unique signers
+--testTransactionCreateSign()
+--testBlock()
+testMerkleRoot()

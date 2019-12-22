@@ -20,7 +20,7 @@ end
 
 function BitcoinWallet:sign(tx)
   local sig = DC.ecdsa(tostring(tx),self.privateKey) or error("signature not valid")
-  tx:addSignature(sig)
+  tx:addSignature(sig,self.publicKey)
 end
 
 function BitcoinWallet:verify(data,publicKey,signature)
